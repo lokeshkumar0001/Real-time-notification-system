@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  auth:
+    build:
+      context: ./auth-service
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./auth-service/.env  # Path to .env file for auth service
+    depends_on:
+      - mongo
+
+  notification:
+    build:
+      context: ./notification-service
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./notification-service/.env  # Path to .env file for notification service
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  real-time:
+    build:
+      context: ./real-time-service
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./real-time-service/.env  # Path to .env file for real-time service
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
